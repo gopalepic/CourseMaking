@@ -8,7 +8,7 @@ function AddCourse(){
     const navigate = useNavigate()
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
-    const [image , setImage] = useState('')
+    const [image , setImage] = useState(''); 
     return(
         
 

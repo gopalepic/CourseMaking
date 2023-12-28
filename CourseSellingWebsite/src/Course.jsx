@@ -1,4 +1,4 @@
-import {Button, Card } from "@mui/material";
+import {Button, Card ,TextField} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import { useState,useEffect } from "react";
 import { useParams } from "react-router-dom"
@@ -7,13 +7,13 @@ function Course() {
 
     let {courseId} = useParams();
 
-    const [courses,setCourses] = useState()
+    const [courses,setCourses] = useState([])
 
     useEffect(() =>{
 
         function callback2(data) {
              setCourses(data.courses)
-             alert("hi")
+          
         }
      function callback1(res)  {
         res.json().then(callback2)
@@ -27,10 +27,10 @@ function Course() {
     },[])
 
     let course = null
-    for (let i = 0;i<courses.length;i++){
-        if(courses[i].id === courseId){
+    for (let i = 0; i<courses.length; i++){
+        if(courses[i].id == courseId)[
             course = courses[i]
-        }
+        ]
     }
 
     if(!course){
@@ -59,12 +59,13 @@ function CourseCard(props){
     }}>
     <Typography variant='h6' textAlign={"center"}>   {props.course.title}</Typography> 
       <Typography variant='h7' textAlign={"center"}>  {props.course.description}</Typography>
-      <img src="props.course.imageLink" style={{minWidth:'300'}} />
+      <img src={props.course.imageLink} style={{minWidth:'300'}} />
          </Card>
          </div>
 }
 
 function UpdateCourse(props){
+    let {courseId} = useParams();
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [image , setImage] = useState('')
@@ -88,7 +89,7 @@ function UpdateCourse(props){
 <br />
 <TextField 
         fullWidth={true}
-         label='UpdateTitle'
+         label='Update Title'
         variant='outlined'
         onChange={(e)=>{
             setTitle(e.target.value)
@@ -98,7 +99,7 @@ function UpdateCourse(props){
 </TextField>
 <br /><br />
 <TextField fullWidth={true}
-label='UpdateDescription'
+label='Update Description'
 variant='outlined'
 type='text'
 onChange={(e) =>{
@@ -112,7 +113,7 @@ onChange={(e) =>{
                 setImage(e.target.value)
             }}
             fullWidth={true}
-            label="UpdateImage link"
+            label="Update Image link"
             variant="outlined"
         />
 
@@ -129,20 +130,23 @@ onClick={() => {
         for(let i =0;i<props.courses.length;i++){
             if(props.courses[i].id == courseId){
                    updatedCourses.push({
-                    id:course.id,
+                    id:courseId,
                     title:title,
                     description:description,
                     imageLink:image
                    })
+                  
                 }
+                alert("Course updated succesesfully")
     }}
 
     function callback1(res) {
       res.json().then(callback2)
-      alert('Course Added')
+       
+      
     }
        
-    fetch("http://localhost:3000/admin/courses/"+ course.id,{
+    fetch("http://localhost:3000/admin/courses/"+courseId,{
         method:"PUT",
         body:JSON.stringify({
             title:title,
@@ -152,7 +156,7 @@ onClick={() => {
         }),
         headers:{
           "Content-type":'application/json',
-          "Authentication":"Bearer "+localStorage.getItem("token")
+          "Authorization":"Bearer "+localStorage.getItem("token")
         }
         
     }).then(callback1)
