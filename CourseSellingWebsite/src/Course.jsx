@@ -1,8 +1,8 @@
-import {Button, Card ,TextField} from "@mui/material";
+import {Button, Card ,TextField ,Grid} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import { useState,useEffect } from "react";
 import { useParams } from "react-router-dom"
-
+import axios from "axios";
 function Course() {
 
     let {courseId} = useParams();
@@ -40,35 +40,64 @@ function Course() {
     }
 
 
- return <div style={{display:'flex', justifyContent:'center'}}>
-<CourseCard course={course}/>
-<UpdateCourse courses={courses} course={course} setCourses={setCourses}/>
+ return (<div>
+    <GrayTopper title={course.title}></GrayTopper>
+    <Grid container style={{display:"flex"}}>
+        <Grid item lg={8} md={12} sm={12}  >
+            <UpdateCourse courses={courses} course={course} setCourses={setCourses}/>
+        </Grid>
+        <Grid item lg={4} md={12} sm={12}>           
+           <CourseCard course={course}/>
+
+        </Grid>
+
+    </Grid>
  </div>
-   
+ 
+
+   )
 } 
+function GrayTopper({title}){
+    return (
+        <div style={{height: 250, background: "#212121", top: 0, width: "100vw", zIndex: 0, marginBottom: -100}}>
+        <div style={{ height: 250, display: "flex", justifyContent: "center", flexDirection: "column"}}>
+            <div>
+                <Typography style={{color: "white", fontWeight: 600}} variant="h3" textAlign={"center"}>
+                    {title}
+                </Typography>
+            </div>
+        </div>
+    </div>
+    )
+}
 
 
 function CourseCard(props){
-    
+    const course = props.course;
     return <div>
 
     <Card style={{
         margin:15,
         width:300,
-        minHeight:200
+        minHeight:300,
+        zIndex:2
+        
     }}>
-    <Typography variant='h6' textAlign={"center"}>   {props.course.title}</Typography> 
-      <Typography variant='h7' textAlign={"center"}>  {props.course.description}</Typography>
-      <img src={props.course.imageLink} style={{minWidth:'300'}} />
+    <Typography variant='h6' textAlign={"center"}>   {course.title}</Typography> 
+      <Typography variant='h7' textAlign={"center"}>  {course.description}</Typography>
+      <img src={course.imageLink} style={{minWidth:'300'}} ></img>
+      <Typography variant='h5' textAlign={"center"}> <b>Rs {course.price}</b></Typography>
+            
          </Card>
          </div>
 }
 
-function UpdateCourse(props){
+function UpdateCourse({courses,setCourses}){
     let {courseId} = useParams();
-    const [title, setTitle] = useState('');
+    const [title, setTitle] = useState(courses.title);
     const [description, setDescription] = useState('');
-    const [image , setImage] = useState('')
+    const [image , setImage] = useState('');
+    const [price , setPrice] = useState('');
     return(
 
 <div style={{
@@ -77,7 +106,7 @@ function UpdateCourse(props){
  justifyContent:'center'
 }}>
 
-<div   style={{display:'flex', justifyContent:'center'}}>
+<div   style={{display:'flex', justifyContent:'center', }}>
 <Card variant='outlined' style={{width:400 , padding:20 }} >
 <div >
 
@@ -87,7 +116,8 @@ function UpdateCourse(props){
     </center>
 <br />
 <br />
-<TextField 
+<TextField  
+        value={title}
         fullWidth={true}
          label='Update Title'
         variant='outlined'
@@ -116,50 +146,55 @@ onChange={(e) =>{
             label="Update Image link"
             variant="outlined"
         />
+        <br /><br />
 
+<TextField
+            onChange={(e) => {
+                setPrice(e.target.value)
+            }}
+            fullWidth={true}
+            label="Price "
+            variant="outlined"
+        />
 </div>
 <center>
 
     <br /><br />
 <Button size='large'
 variant='contained'
-onClick={() => {
+onClick={async() => {
 
-    function callback2(data) {
-        let updatedCourses = []; 
-        for(let i =0;i<props.courses.length;i++){
-            if(props.courses[i].id == courseId){
-                   updatedCourses.push({
-                    id:courseId,
-                    title:title,
-                    description:description,
-                    imageLink:image
-                   })
-                  
-                }
-                alert("Course updated succesesfully")
-    }}
-
-    function callback1(res) {
-      res.json().then(callback2)
        
-      
-    }
+    await axios.put("http://localhost:3000/admin/courses/"+ courseId,{
        
-    fetch("http://localhost:3000/admin/courses/"+courseId,{
-        method:"PUT",
-        body:JSON.stringify({
             title:title,
             description:description,
             imageLink:image,
-            published:true
-        }),
+            published:true,
+            price:price
+        }
+    ,{
         headers:{
-          "Content-type":'application/json',
+            "Content-Type":"application/json",
           "Authorization":"Bearer "+localStorage.getItem("token")
         }
         
-    }).then(callback1)
+    })
+    let updatedCourses = []; 
+    for(let i =0;i<courses.length;i++){
+        if(courses[i].id == courseId){
+               updatedCourses.push({
+                id:courseId,
+                title:title,
+                description:description,
+                imageLink:image,
+                price :price
+               })
+              
+            }
+            alert("Course updated succesesfully")
+}
+
 }}
 >
 UpdateCourse

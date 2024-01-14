@@ -3,12 +3,13 @@ import {Button,TextField} from '@mui/material'
 import Card from '@mui/material/Card';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import axios from "axios";
 function AddCourse(){
     const navigate = useNavigate()
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [image , setImage] = useState(''); 
+    const [price , setPrice] = useState('');
     return(
         
 
@@ -57,37 +58,38 @@ onChange={(e) =>{
             label="Image link"
             variant="outlined"
         />
-
+<br /><br />
+<TextField
+            onChange={(e) => {
+                setPrice(e.target.value)
+            }}
+            fullWidth={true}
+            label="Price "
+            variant="outlined"
+        />
 </div>
 <center>
 
     <br /><br />
 <Button size='large'
 variant='contained'
-onClick={() => {
+onClick={async() => {
 
-    function callback2(data) {
-          alert('Course Added')
-          console.log("Courses Added")
-}
-    function callback1(res) {
-      res.json().then(callback2)
-    }
+   await axios.post("http://localhost:3000/admin/courses",{
        
-    fetch("http://localhost:3000/admin/courses",{
-        method:"POST",
-        body:JSON.stringify({
             title:title,
             description:description,
             imageLink:image,
-            published:true
-        }),
+            published:true,
+            price
+ } ,{
         headers:{
-          "Content-type":'application/json',
           "Authorization":"Bearer "+localStorage.getItem("token")
         }
         
-    }).then(callback1)
+    }).then((res) => {
+        alert('Course Added')
+    })
 }}
 >
 Addcourse

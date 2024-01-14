@@ -40,6 +40,8 @@ function Courses(){
         <Typography variant='h6' textAlign={"center"}>   {props.course.title}</Typography> 
           <Typography variant='subtitle1' textAlign={"center"}>  {props.course.description}</Typography>
           <img src={props.course.imageLink} style={{Width:'300', height:'300'}} ></img>
+          <Typography variant='h5' textAlign={"center"}>   {props.course.price}</Typography> 
+
              </Card>
     }
 export default Courses
